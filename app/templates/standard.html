@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block tiers %}
+{% for cat in tier.categories %}
+  <div class="tier-row">
+    <div class="tier-label" style="background:{{ cat.color }}">{{ cat.tier_name }}</div>
+    <div class="tier-items">
+      {% for item in cat.items %}
+      <div class="item-card">
+        {% if item.image_url %}
+          <img src="{{ item.image_url }}" alt="{{ item.name }}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="placeholder" style="display:none">{{ item.name[0] }}</div>
+        {% else %}
+          <div class="placeholder">{{ item.name[0] }}</div>
+        {% endif %}
+        <span class="item-name">{{ item.name }}</span>
+      </div>
+      {% endfor %}
+      {% if not cat.items %}
+        <span style="color:#555;font-style:italic;font-size:13px;padding:12px">— empty —</span>
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}
