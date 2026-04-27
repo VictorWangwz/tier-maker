@@ -1,7 +1,7 @@
 [project]
 name = "auto-tier-maker"
 version = "0.1.0"
-description = "Add your description here"
+description = "Generate beautiful tier-list images from natural language using AI, automatic image search, and headless browser rendering"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
