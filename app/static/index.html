@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tier Maker</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0f0f1a;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+.container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+h1 { text-align: center; font-size: 2em; margin-bottom: 8px; }
+.subtitle { text-align: center; color: #888; margin-bottom: 32px; }
+
+.card {
+  background: #1a1a2e;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+label { display: block; margin-bottom: 6px; font-weight: 600; }
+textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #12121f;
+  color: #e0e0e0;
+  font-size: 15px;
+  resize: vertical;
+  font-family: inherit;
+}
+textarea:focus { outline: none; border-color: #7f7fff; }
+input[type="email"] {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #12121f;
+  color: #e0e0e0;
+  font-size: 15px;
+  margin-top: 4px;
+}
+input:focus { outline: none; border-color: #7f7fff; }
+.email-field { margin-top: 16px; }
+.email-field small { color: #666; }
+
+button {
+  margin-top: 16px;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  background: #7f7fff;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+button:hover { background: #6a6aee; }
+button:disabled { background: #444; cursor: not-allowed; }
+
+.examples h2 { font-size: 1.1em; margin-bottom: 12px; color: #aaa; }
+.example-item {
+  padding: 10px 14px;
+  background: #12121f;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border: 1px solid #222;
+  transition: border-color 0.2s;
+}
+.example-item:hover { border-color: #7f7fff; }
+.example-item .text { font-size: 14px; }
+.example-item .meta { font-size: 12px; color: #555; margin-top: 4px; }
+
+#result { display: none; }
+#result img {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+.download-btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 20px;
+  background: #2e7d32;
+  border-radius: 8px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+.download-btn:hover { background: #388e3c; }
+
+.spinner {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 3px solid #444;
+  border-top-color: #7f7fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error { color: #ff7f7f; margin-top: 8px; }
+.tier-preview { margin-top: 16px; }
+.tier-row {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.tier-label {
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.tier-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: #12121f;
+  flex: 1;
+}
+.tier-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+}
+.tier-item img {
+  width: 40px; height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  margin-bottom: 2px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Tier Maker</h1>
+  <p class="subtitle">Describe your tier list, get an image</p>
+
+  <div class="card" id="form-card">
+    <label for="input-text">Describe your tier list</label>
+    <textarea id="input-text" placeholder="e.g. Apple and Samsung in S tier, Google in A tier, Xiaomi in B tier"></textarea>
+    <div class="email-field">
+      <label for="email">Email (optional)</label>
+      <input type="email" id="email" placeholder="you@example.com">
+      <small>Get notified when your tier list is ready</small>
+    </div>
+    <button id="submit-btn" onclick="submitJob()">Generate</button>
+  </div>
+
+  <div class="card" id="status-card" style="display:none">
+    <div id="status-content"></div>
+  </div>
+
+  <div class="card" id="result-card" style="display:none">
+    <h2 id="result-title"></h2>
+    <img id="result-image" src="" alt="Tier List">
+    <a id="download-link" class="download-btn" download>Download Image</a>
+    <div id="tier-preview" class="tier-preview"></div>
+    <button onclick="resetForm()" style="margin-top:16px; background:#444;">Create Another</button>
+  </div>
+
+  <div class="card examples">
+    <h2>Recent Creations</h2>
+    <div id="examples-list"></div>
+  </div>
+</div>
+
+<script>
+let pollTimer = null;
+
+async function loadExamples() {
+  try {
+    const res = await fetch('/jobs');
+    const jobs = await res.json();
+    const el = document.getElementById('examples-list');
+    if (jobs.length === 0) {
+      el.innerHTML = '<p style="color:#555;font-size:14px">No creations yet. Be the first!</p>';
+      return;
+    }
+    el.innerHTML = jobs.map(j => `
+      <div class="example-item" onclick="loadExample(${j.id}, '${j.input_text.replace(/'/g, "\\'")}')">
+        <div class="text">${escapeHtml(j.input_text)}</div>
+        <div class="meta">#${j.id} &middot; ${j.created_at || ''}</div>
+      </div>
+    `).join('');
+  } catch {}
+}
+
+function loadExample(id, text) {
+  document.getElementById('input-text').value = text;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+async function submitJob() {
+  const text = document.getElementById('input-text').value.trim();
+  if (!text) return;
+
+  const email = document.getElementById('email').value.trim();
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  try {
+    const res = await fetch('/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, email }),
+    });
+    if (!res.ok) throw new Error('Failed to create job');
+    const data = await res.json();
+    showStatus('pending', data.id);
+    pollJob(data.id);
+  } catch (e) {
+    document.getElementById('status-content').innerHTML = `<p class="error">${e.message}</p>`;
+    document.getElementById('status-card').style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Generate';
+  }
+}
+
+function showStatus(status, jobId) {
+  const card = document.getElementById('status-card');
+  const content = document.getElementById('status-content');
+  card.style.display = 'block';
+  document.getElementById('result-card').style.display = 'none';
+
+  if (status === 'pending') {
+    content.innerHTML = `<p><span class="spinner"></span> Job #${jobId} queued, waiting to start...</p>`;
+  } else if (status === 'running') {
+    content.innerHTML = `<p><span class="spinner"></span> Job #${jobId} is being generated...</p>`;
+  } else if (status === 'failed') {
+    content.innerHTML = `<p class="error">Job #${jobId} failed. Please try again.</p>`;
+    clearInterval(pollTimer);
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').textContent = 'Generate';
+  }
+}
+
+async function pollJob(jobId) {
+  pollTimer = setInterval(async () => {
+    try {
+      const res = await fetch(`/jobs/${jobId}`);
+      const data = await res.json();
+      if (data.status === 'done') {
+        clearInterval(pollTimer);
+        showResult(data);
+      } else if (data.status === 'failed') {
+        showStatus('failed', jobId);
+      } else {
+        showStatus(data.status, jobId);
+      }
+    } catch {}
+  }, 2000);
+}
+
+function showResult(data) {
+  document.getElementById('status-card').style.display = 'none';
+  document.getElementById('form-card').style.display = 'none';
+
+  const resultCard = document.getElementById('result-card');
+  resultCard.style.display = 'block';
+
+  const title = data.tiers ? data.tiers.map(t => t.tier_name).join(' / ') : 'Tier List';
+  document.getElementById('result-title').textContent = 'Your Tier List';
+
+  if (data.image_url) {
+    document.getElementById('result-image').src = data.image_url;
+    document.getElementById('download-link').href = data.image_url;
+    document.getElementById('result-image').style.display = 'block';
+    document.getElementById('download-link').style.display = 'inline-block';
+  }
+
+  if (data.tiers) {
+    const preview = document.getElementById('tier-preview');
+    preview.innerHTML = data.tiers.map(t => {
+      const items = t.items.map(i => {
+        const img = i.image_url ? `<img src="${i.image_url}" alt="${escapeHtml(i.name)}" onerror="this.style.display='none'">` : '';
+        return `<div class="tier-item">${img}<span>${escapeHtml(i.name)}</span></div>`;
+      }).join('');
+      return `<div class="tier-row"><div class="tier-label" style="background:${t.color}">${escapeHtml(t.tier_name)}</div><div class="tier-items">${items}</div></div>`;
+    }).join('');
+  }
+}
+
+function resetForm() {
+  document.getElementById('form-card').style.display = 'block';
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('status-card').style.display = 'none';
+  document.getElementById('input-text').value = '';
+  document.getElementById('email').value = '';
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('submit-btn').textContent = 'Generate';
+  loadExamples();
+}
+
+loadExamples();
+</script>
+</body>
+</html>

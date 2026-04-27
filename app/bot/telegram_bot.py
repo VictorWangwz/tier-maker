@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 async def _handle_message(text: str) -> Path:
     """Run the full tier-list pipeline and return the generated image path."""
     tier_data = parse_tier_list(text)
-    tier_data = await fetch_images(tier_data, searcher=TavilyImageSearcher())
+    tier_data = await fetch_images(tier_data, searcher=TavilyImageSearcher(), context_text=text)
     image_path = await render_tier_image(tier_data)
     return image_path
 

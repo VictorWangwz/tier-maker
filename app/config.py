@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     output_dir: Path = Path("output")
     cache_dir: Path = Path("cache")
 
+    database_url: str = "postgresql://tiermaker:tiermaker@localhost:5432/tiermaker"
+
     tavily_api_key: str = ""
 
     telegram_bot_token: str = ""

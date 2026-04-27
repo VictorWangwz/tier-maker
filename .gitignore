@@ -11,7 +11,9 @@ venv/
 .env
 
 # Generated output
-output/*.png
+output/
+cache/
+data/
 
 # IDE
 .vscode/
@@ -20,8 +22,3 @@ output/*.png
 # OS
 .DS_Store
 Thumbs.db
-
-
-output/
-cache/
-static/
